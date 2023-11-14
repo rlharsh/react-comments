@@ -73,7 +73,7 @@ const CommentCard = ({ comment, likeButtonClicked, dislikeButtonClicked, replyBu
                 </div>
             </div>
             {
-                replyShowing && <ReplyCard onHideReply={hideReply} />
+                replyShowing && <ReplyCard onHideReply={hideReply} parentId={comment.id} />
             }
             <div className='comment-replies'>
             {

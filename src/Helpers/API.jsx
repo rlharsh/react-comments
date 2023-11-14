@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { onSnapshot, getDoc, doc, arrayRemove, getDocs, getFirestore, collection, query, where, updateDoc, arrayUnion } from "firebase/firestore";
+import { addDoc, onSnapshot, getDoc, doc, arrayRemove, getDocs, getFirestore, collection, query, where, updateDoc, arrayUnion } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAMBx7wvTiot4PD7tchiCw7C5vaeyv6OYY",
@@ -51,6 +51,26 @@ export async function addLikeToComment(id, uid, child) {
     })
   } catch (error) {
     console.error("Error adding a like: ", error);
+  }
+}
+
+export async function addResponseToComment(id, user, child, message) {
+  try {
+    const data = {
+      author: user.displayName,
+      avatar: user.photoURL,
+      comment_text: message,
+      date: new Date(),
+      likes: [],
+      parent_id: id,
+      replies: []
+    }
+
+    const replyCollectionRef = collection(db, 'replies');
+    const res = await addDoc(replyCollectionRef, data);
+
+  } catch (error) {
+    console.error('Error: ', error);
   }
 }
 
