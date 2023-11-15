@@ -39,11 +39,11 @@ const Comments = () => {
         }
     };
 
-    const dislikeButtonClicked = async (id) => {
+    const dislikeButtonClicked = async (id, child = false) => {
         if (!authenticated) {
             console.log("You are not logged in.");
         } else {
-            await removeLikeFromComment(id, user.uid);
+            await removeLikeFromComment(id, user.uid, child);
         }
     };
 

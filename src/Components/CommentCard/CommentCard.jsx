@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect, useRef } from 'react'
 import LikeDislike from '../LikeDislike/LikeDislike';
 import ReplyButton from '../ReplyButton/ReplyButton';
 import AuthenticationContext from '../../Providers/AuthenticationContext';
-import { getAllReplies } from '../../Helpers/API';
+import { getAllReplies, subscribeToReplies } from '../../Helpers/API';
 import ReplyCard from '../ReplyCard/ReplyCard';
 
 const CommentCard = ({ comment, likeButtonClicked, dislikeButtonClicked, replyButtonClicked, child = false}) => {
@@ -20,6 +20,11 @@ const CommentCard = ({ comment, likeButtonClicked, dislikeButtonClicked, replyBu
     const [replies, setReplies] = useState([]);
 
     const repliesLoaded = useRef(false);
+
+    useEffect(() => {
+        const unsubscribe = subscribeToReplies(comment.id, setReplies);
+        return () => unsubscribe();
+    }, [comment.id]);
 
     const replyToComment = () => {
         if (authenticated) {

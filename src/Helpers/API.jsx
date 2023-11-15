@@ -43,14 +43,50 @@ export async function getAllReplies(id) {
   }
 }
 
+export function subscribeToReplies(parentId, callback) {
+  const replyCollectionRef = collection(db, "replies");
+  const q = query(replyCollectionRef, where("parent_id", "==", parentId));
+
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    const updatedReplies = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    callback(updatedReplies);
+  }, (error) => {
+    console.error("Error subscribing to replies:", error);
+  });
+
+  return unsubscribe;
+}
+
 export async function addLikeToComment(id, uid, child) {
   try {
+    console.log(child);
     const commentDocRef = !child ? doc(db, 'comments', id) : doc(db, 'replies', id);
     await updateDoc(commentDocRef, {
       likes: arrayUnion({ uid: uid })
     })
   } catch (error) {
     console.error("Error adding a like: ", error);
+  }
+}
+
+export async function removeLikeFromComment(id, uid, child) {
+  console.log(child)
+  try {
+    const commentDocRef = !child ? doc(db, 'comments', id) : doc(db, 'replies', id);
+    const commentDoc = await getDoc(commentDocRef);
+    if (commentDoc.exists()) {
+      const currentLikes = commentDoc.data().likes;
+      const newLikes = currentLikes.filter(like => like.uid !== uid);
+
+      await updateDoc(commentDocRef, {
+        likes: newLikes
+      })
+    }
+  } catch (error) {
+    console.error("Error removing like: ", error);
   }
 }
 
@@ -71,23 +107,6 @@ export async function addResponseToComment(id, user, child, message) {
 
   } catch (error) {
     console.error('Error: ', error);
-  }
-}
-
-export async function removeLikeFromComment(id, uid, child) {
-  try {
-    const commentDocRef = !child ? doc(db, 'comments', id) : doc(db, 'replies', id);
-    const commentDoc = await getDoc(commentDocRef);
-    if (commentDoc.exists()) {
-      const currentLikes = commentDoc.data().likes;
-      const newLikes = currentLikes.filter(like => like.uid !== uid);
-
-      await updateDoc(commentDocRef, {
-        likes: newLikes
-      })
-    }
-  } catch (error) {
-    console.error("Error removing like: ", error);
   }
 }
 
