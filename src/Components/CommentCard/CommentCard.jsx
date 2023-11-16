@@ -73,7 +73,7 @@ const CommentCard = ({ comment, likeButtonClicked, dislikeButtonClicked, replyBu
                     </LikeDislike>
                     }
                     {
-                        <ReplyButton replyButtonClicked={() => replyToComment()}/>
+                        authenticated && user?.uid !== comment.uid ? <><ReplyButton replyButtonClicked={() => replyToComment()}/></> : null
                     }
                 </div>
             </div>

@@ -62,7 +62,6 @@ export function subscribeToReplies(parentId, callback) {
 
 export async function addLikeToComment(id, uid, child) {
   try {
-    console.log(child);
     const commentDocRef = !child ? doc(db, 'comments', id) : doc(db, 'replies', id);
     await updateDoc(commentDocRef, {
       likes: arrayUnion({ uid: uid })
@@ -73,7 +72,6 @@ export async function addLikeToComment(id, uid, child) {
 }
 
 export async function removeLikeFromComment(id, uid, child) {
-  console.log(child)
   try {
     const commentDocRef = !child ? doc(db, 'comments', id) : doc(db, 'replies', id);
     const commentDoc = await getDoc(commentDocRef);
@@ -99,7 +97,8 @@ export async function addResponseToComment(id, user, child, message) {
       date: new Date(),
       likes: [],
       parent_id: id,
-      replies: []
+      replies: [],
+      uid: user.uid
     }
 
     const replyCollectionRef = collection(db, 'replies');
